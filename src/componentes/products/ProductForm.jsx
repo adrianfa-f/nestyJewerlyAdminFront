@@ -282,7 +282,7 @@ const ProductForm = ({ initialData, onSubmit, isSubmitting }) => {
             onChange={handleMainImageChange}
             className="w-full p-2 border rounded"
             accept="image/*"
-            required
+            required={formData.status === 'featured'}
           />
           {formData.mainImage && (
             <div className="mt-2 flex items-center">
@@ -316,7 +316,7 @@ const ProductForm = ({ initialData, onSubmit, isSubmitting }) => {
             onChange={handleHoverImageChange}
             className="w-full p-2 border rounded"
             accept="image/*"
-            required
+            required={formData.status === 'featured'}
           />
           {formData.hoverImage && (
             <div className="mt-2 flex items-center">
@@ -349,7 +349,7 @@ const ProductForm = ({ initialData, onSubmit, isSubmitting }) => {
           onChange={handleAdditionalImagesChange}
           className="w-full p-2 border rounded"
           accept="image/*"
-          required={formData.status === 'active'}
+          required
         />
         <div className="mt-2 flex gap-2 flex-wrap">
           {formData.images.map((img, index) => (
