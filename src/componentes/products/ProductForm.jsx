@@ -340,7 +340,7 @@ const ProductForm = ({ initialData, onSubmit, isSubmitting }) => {
       
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
-          Imágenes Adicionales (Detalle del producto)
+          Imágenes Descriptivas
         </label>
         <input
           ref={additionalImagesRef}
@@ -349,6 +349,7 @@ const ProductForm = ({ initialData, onSubmit, isSubmitting }) => {
           onChange={handleAdditionalImagesChange}
           className="w-full p-2 border rounded"
           accept="image/*"
+          required={formData.status === 'active'}
         />
         <div className="mt-2 flex gap-2 flex-wrap">
           {formData.images.map((img, index) => (
