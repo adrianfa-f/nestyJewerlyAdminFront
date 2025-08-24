@@ -39,7 +39,22 @@ const ProductForm = ({ initialData, onSubmit, isSubmitting }) => {
   // Manejar cambios en los inputs de texto/select
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    
+    // Si el campo que cambia es "status"
+    if (name === 'status' && value === 'active') {
+      // Limpiar imágenes si se vuelve a "active"
+      setFormData(prev => ({
+        ...prev,
+        status: value,
+        mainImage: '',
+        hoverImage: ''
+      }));
+      // También puedes limpiar los archivos referenciados si usas FileReader
+      if (mainImageRef.current) mainImageRef.current.value = '';
+      if (hoverImageRef.current) hoverImageRef.current.value = '';
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
   };
 
   // Manejar cambio en la imagen principal
@@ -255,66 +270,73 @@ const ProductForm = ({ initialData, onSubmit, isSubmitting }) => {
           </select>
       </div>
       
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Imagen Principal (Home)
-        </label>
-        <input
-          ref={mainImageRef}
-          type="file"
-          name="mainImage"
-          onChange={handleMainImageChange}
-          className="w-full p-2 border rounded"
-          accept="image/*"
-          required={!initialData}
-        />
-        {formData.mainImage && (
-          <div className="mt-2 flex items-center">
-            <img 
-              src={formData.mainImage} 
-              alt="Vista previa imagen principal" 
-              className="w-32 h-32 object-contain"
-            />
-            <button
-              type="button"
-              onClick={removeMainImage}
-              className="ml-4 text-red-500 hover:text-red-700"
-            >
-              Eliminar
-            </button>
-          </div>
-        )}
-      </div>
+      {formData.status === 'featured' && (
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Imagen Principal (Home)
+          </label>
+          <input
+            ref={mainImageRef}
+            type="file"
+            name="mainImage"
+            onChange={handleMainImageChange}
+            className="w-full p-2 border rounded"
+            accept="image/*"
+            required
+          />
+          {formData.mainImage && (
+            <div className="mt-2 flex items-center">
+              <img 
+                src={formData.mainImage} 
+                alt="Vista previa imagen principal" 
+                className="w-32 h-32 object-contain"
+              />
+              <button
+                type="button"
+                onClick={removeMainImage}
+                className="ml-4 text-red-500 hover:text-red-700"
+              >
+                Eliminar
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
       
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Imagen Hover (Home - Opcional)
-        </label>
-        <input
-          ref={hoverImageRef}
-          type="file"
-          name="hoverImage"
-          onChange={handleHoverImageChange}
-          className="w-full p-2 border rounded"
-          accept="image/*"
-        />
-        {formData.hoverImage && (
-          <div className="mt-2 flex items-center">
-            <img 
-              src={formData.hoverImage} 
-              alt="Vista previa imagen hover" 
-              className="w-32 h-32 object-contain"
-            />
-            <button
-              type="button"
-              onClick={removeHoverImage}
-              className="ml-4 text-red-500 hover:text-red-700"
-            >
-              Eliminar
-            </button>
-          </div>
-        )}
-      </div>
+      {formData.status === 'featured' && (
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Imagen Hover (Home - Opcional)
+          </label>
+          <input
+            ref={hoverImageRef}
+            type="file"
+            name="hoverImage"
+            onChange={handleHoverImageChange}
+            className="w-full p-2 border rounded"
+            accept="image/*"
+            required
+          />
+          {formData.hoverImage && (
+            <div className="mt-2 flex items-center">
+              <img 
+                src={formData.hoverImage} 
+                alt="Vista previa imagen hover" 
+                className="w-32 h-32 object-contain"
+              />
+              <button
+                type="button"
+                onClick={removeHoverImage}
+                className="ml-4 text-red-500 hover:text-red-700"
+              >
+                Eliminar
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
       
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
