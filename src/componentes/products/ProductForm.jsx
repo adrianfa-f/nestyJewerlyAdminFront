@@ -18,12 +18,18 @@ const ProductForm = ({ initialData, onSubmit, isSubmitting }) => {
   // Referencias para los inputs de archivo
   const mainImageRef = useRef(null);
   const hoverImageRef = useRef(null);
-  const additionalImagesRef = useRef(null);
+  const image1Ref = useRef(null);
+  const image2Ref = useRef(null);
+  const image3Ref = useRef(null);
+  const image4Ref = useRef(null);
   
   // Estados para los archivos de imagen
   const [mainImageFile, setMainImageFile] = useState(null);
   const [hoverImageFile, setHoverImageFile] = useState(null);
-  const [additionalImageFiles, setAdditionalImageFiles] = useState([]);
+  const [image1File, setImage1File] = useState(null);
+  const [image2File, setImage2File] = useState(null);
+  const [image3File, setImage3File] = useState(null);
+  const [image4File, setImage4File] = useState(null);
 
   // Categorías actualizadas
   const categories = [
@@ -87,39 +93,25 @@ const ProductForm = ({ initialData, onSubmit, isSubmitting }) => {
   };
 
   // Manejar cambio en las imágenes adicionales
-  const handleAdditionalImagesChange = (e) => {
-    const files = Array.from(e.target.files);
-    if (files.length > 0) {
-      setAdditionalImageFiles(files);
+  // Manejar cambio en las imágenes individuales
+  const handleImageChange = (e, setFileFunction, imageField) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFileFunction(file);
       
-      // Crear URLs locales para vista previa
-      const newImages = [];
-      files.forEach(file => {
-        const reader = new FileReader();
-        reader.onload = () => {
-          newImages.push(reader.result);
-          if (newImages.length === files.length) {
-            setFormData(prev => ({ 
-              ...prev, 
-              images: [...prev.images, ...newImages] 
-            }));
-          }
-        };
-        reader.readAsDataURL(file);
-      });
+      const reader = new FileReader();
+      reader.onload = () => {
+        setFormData(prev => ({ ...prev, [imageField]: reader.result }));
+      };
+      reader.readAsDataURL(file);
     }
   };
 
-  // Eliminar una imagen adicional
-  const removeAdditionalImage = (index) => {
-    const newImages = [...formData.images];
-    newImages.splice(index, 1);
-    
-    const newFiles = [...additionalImageFiles];
-    newFiles.splice(index, 1);
-    
-    setFormData(prev => ({ ...prev, images: newImages }));
-    setAdditionalImageFiles(newFiles);
+  // Eliminar imagen individual
+  const removeImage = (setFileFunction, imageField, ref) => {
+    setFileFunction(null);
+    setFormData(prev => ({ ...prev, [imageField]: '' }));
+    resetFileInput(ref);
   };
 
   // Restablecer inputs de archivo
@@ -152,7 +144,10 @@ const ProductForm = ({ initialData, onSubmit, isSubmitting }) => {
       ...formData,
       mainImageFile,
       hoverImageFile,
-      imageFiles: additionalImageFiles
+      image1File,
+      image2File,
+      image3File,
+      image4File
     };
     
     onSubmit(submitData);
@@ -340,35 +335,119 @@ const ProductForm = ({ initialData, onSubmit, isSubmitting }) => {
       
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
-          Imágenes Descriptivas
+          Imagen 1 (Requerida)
         </label>
         <input
-          ref={additionalImagesRef}
+          ref={image1Ref}
           type="file"
-          multiple
-          onChange={handleAdditionalImagesChange}
+          onChange={(e) => handleImageChange(e, setImage1File, 'image1')}
           className="w-full p-2 border rounded"
           accept="image/*"
           required
         />
-        <div className="mt-2 flex gap-2 flex-wrap">
-          {formData.images.map((img, index) => (
-            <div key={index} className="relative">
-              <img 
-                src={img} 
-                alt={`Imagen ${index + 1}`} 
-                className="w-16 h-16 object-cover rounded border"
-              />
-              <button
-                type="button"
-                onClick={() => removeAdditionalImage(index)}
-                className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center"
-              >
-                ×
-              </button>
-            </div>
-          ))}
-        </div>
+        {formData.image1 && (
+          <div className="mt-2 flex items-center">
+            <img 
+              src={formData.image1} 
+              alt="Vista previa imagen 1" 
+              className="w-32 h-32 object-contain"
+            />
+            <button
+              type="button"
+              onClick={() => removeImage(setImage1File, 'image1', image1Ref)}
+              className="ml-4 text-red-500 hover:text-red-700"
+            >
+              Eliminar
+            </button>
+          </div>
+        )}
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Imagen 2 (Opcional)
+        </label>
+        <input
+          ref={image2Ref}
+          type="file"
+          onChange={(e) => handleImageChange(e, setImage2File, 'image2')}
+          className="w-full p-2 border rounded"
+          accept="image/*"
+        />
+        {formData.image2 && (
+          <div className="mt-2 flex items-center">
+            <img 
+              src={formData.image2} 
+              alt="Vista previa imagen 2" 
+              className="w-32 h-32 object-contain"
+            />
+            <button
+              type="button"
+              onClick={() => removeImage(setImage2File, 'image2', image2Ref)}
+              className="ml-4 text-red-500 hover:text-red-700"
+            >
+              Eliminar
+            </button>
+          </div>
+        )}
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Imagen 3 (Opcional)
+        </label>
+        <input
+          ref={image3Ref}
+          type="file"
+          onChange={(e) => handleImageChange(e, setImage3File, 'image3')}
+          className="w-full p-2 border rounded"
+          accept="image/*"
+        />
+        {formData.image3 && (
+          <div className="mt-2 flex items-center">
+            <img 
+              src={formData.image3} 
+              alt="Vista previa imagen 3" 
+              className="w-32 h-32 object-contain"
+            />
+            <button
+              type="button"
+              onClick={() => removeImage(setImage3File, 'image3', image3Ref)}
+              className="ml-4 text-red-500 hover:text-red-700"
+            >
+              Eliminar
+            </button>
+          </div>
+        )}
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Imagen 4 (Opcional)
+        </label>
+        <input
+          ref={image4Ref}
+          type="file"
+          onChange={(e) => handleImageChange(e, setImage4File, 'image4')}
+          className="w-full p-2 border rounded"
+          accept="image/*"
+        />
+        {formData.image4 && (
+          <div className="mt-2 flex items-center">
+            <img 
+              src={formData.image4} 
+              alt="Vista previa imagen 4" 
+              className="w-32 h-32 object-contain"
+            />
+            <button
+              type="button"
+              onClick={() => removeImage(setImage4File, 'image4', image4Ref)}
+              className="ml-4 text-red-500 hover:text-red-700"
+            >
+              Eliminar
+            </button>
+          </div>
+        )}
       </div>
       
       <button 
