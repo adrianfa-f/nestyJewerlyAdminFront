@@ -12,7 +12,13 @@ const ProductForm = ({ initialData, onSubmit, isSubmitting }) => {
     status: 'active',
     mainImage: '',
     hoverImage: '',
-    images: []
+    image1: '',
+    image2: '',
+    image3: '',
+    image4: '',
+    material: '',
+    color: '',
+    gender: ''
   });
   
   // Referencias para los inputs de archivo
@@ -24,12 +30,12 @@ const ProductForm = ({ initialData, onSubmit, isSubmitting }) => {
   const image4Ref = useRef(null);
   
   // Estados para los archivos de imagen
-  const [mainImage, setMainImage] = useState(null);
-  const [hoverImage, setHoverImage] = useState(null);
-  const [image1, setImage1] = useState(null);
-  const [image2, setImage2] = useState(null);
-  const [image3, setImage3] = useState(null);
-  const [image4, setImage4] = useState(null);
+  const [mainImageFile, setMainImageFile] = useState(null);
+  const [hoverImageFile, setHoverImageFile] = useState(null);
+  const [image1File, setImage1File] = useState(null);
+  const [image2File, setImage2File] = useState(null);
+  const [image3File, setImage3File] = useState(null);
+  const [image4File, setImage4File] = useState(null);
 
   // Categorías actualizadas
   const categories = [
@@ -63,37 +69,7 @@ const ProductForm = ({ initialData, onSubmit, isSubmitting }) => {
     }
   };
 
-  // Manejar cambio en la imagen principal
-  const handleMainImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setMainImage(file);
-      
-      // Crear una URL local para la vista previa
-      const reader = new FileReader();
-      reader.onload = () => {
-        setFormData(prev => ({ ...prev, mainImage: reader.result }));
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  // Manejar cambio en la imagen de hover
-  const handleHoverImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setHoverImage(file);
-      
-      const reader = new FileReader();
-      reader.onload = () => {
-        setFormData(prev => ({ ...prev, hoverImage: reader.result }));
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  // Manejar cambio en las imágenes adicionales
-  // Manejar cambio en las imágenes individuales
+  // Manejar cambio en las imágenes
   const handleImageChange = (e, setFileFunction, imageField) => {
     const file = e.target.files[0];
     if (file) {
@@ -107,7 +83,7 @@ const ProductForm = ({ initialData, onSubmit, isSubmitting }) => {
     }
   };
 
-  // Eliminar imagen individual
+  // Eliminar imagen
   const removeImage = (setFileFunction, imageField, ref) => {
     setFileFunction(null);
     setFormData(prev => ({ ...prev, [imageField]: '' }));
@@ -121,20 +97,6 @@ const ProductForm = ({ initialData, onSubmit, isSubmitting }) => {
     }
   };
 
-  // Eliminar imagen principal
-  const removeMainImage = () => {
-    setMainImage(null);
-    setFormData(prev => ({ ...prev, mainImage: '' }));
-    resetFileInput(mainImageRef);
-  };
-
-  // Eliminar imagen hover
-  const removeHoverImage = () => {
-    setHoverImage(null);
-    setFormData(prev => ({ ...prev, hoverImage: '' }));
-    resetFileInput(hoverImageRef);
-  };
-
   // Enviar formulario
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -142,12 +104,12 @@ const ProductForm = ({ initialData, onSubmit, isSubmitting }) => {
     // Preparar datos para enviar
     const submitData = {
       ...formData,
-      mainImage,
-      hoverImage,
-      image1,
-      image2,
-      image3,
-      image4
+      mainImageFile,
+      hoverImageFile,
+      image1File,
+      image2File,
+      image3File,
+      image4File
     };
     
     onSubmit(submitData);
@@ -248,6 +210,54 @@ const ProductForm = ({ initialData, onSubmit, isSubmitting }) => {
           </select>
         </div>
       </div>
+
+      {/* Nuevos campos */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Material (Opcional)
+          </label>
+          <input
+            type="text"
+            name="material"
+            value={formData.material}
+            onChange={handleChange}
+            className="w-full p-2 border rounded"
+            placeholder="Ej: Oro, Plata, etc."
+          />
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Color (Opcional)
+          </label>
+          <input
+            type="text"
+            name="color"
+            value={formData.color}
+            onChange={handleChange}
+            className="w-full p-2 border rounded"
+            placeholder="Ej: Dorado, Plateado, etc."
+          />
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Género (Opcional)
+          </label>
+          <select
+            name="gender"
+            value={formData.gender}
+            onChange={handleChange}
+            className="w-full p-2 border rounded"
+          >
+            <option value="">Seleccionar género</option>
+            <option value="hombre">Hombre</option>
+            <option value="mujer">Mujer</option>
+            <option value="unisex">Unisex</option>
+          </select>
+        </div>
+      </div>
       
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -274,10 +284,10 @@ const ProductForm = ({ initialData, onSubmit, isSubmitting }) => {
             ref={mainImageRef}
             type="file"
             name="mainImage"
-            onChange={handleMainImageChange}
+            onChange={(e) => handleImageChange(e, setMainImageFile, 'mainImage')}
             className="w-full p-2 border rounded"
             accept="image/*"
-            required={formData.status === 'featured'}
+            required={!initialData && formData.status === 'featured'}
           />
           {formData.mainImage && (
             <div className="mt-2 flex items-center">
@@ -288,7 +298,7 @@ const ProductForm = ({ initialData, onSubmit, isSubmitting }) => {
               />
               <button
                 type="button"
-                onClick={removeMainImage}
+                onClick={() => removeImage(setMainImageFile, 'mainImage', mainImageRef)}
                 className="ml-4 text-red-500 hover:text-red-700"
               >
                 Eliminar
@@ -308,10 +318,10 @@ const ProductForm = ({ initialData, onSubmit, isSubmitting }) => {
             ref={hoverImageRef}
             type="file"
             name="hoverImage"
-            onChange={handleHoverImageChange}
+            onChange={(e) => handleImageChange(e, setHoverImageFile, 'hoverImage')}
             className="w-full p-2 border rounded"
             accept="image/*"
-            required={formData.status === 'featured'}
+            required={formData.status === 'featured' && !initialData}
           />
           {formData.hoverImage && (
             <div className="mt-2 flex items-center">
@@ -322,7 +332,7 @@ const ProductForm = ({ initialData, onSubmit, isSubmitting }) => {
               />
               <button
                 type="button"
-                onClick={removeHoverImage}
+                onClick={() => removeImage(setHoverImageFile, 'hoverImage', hoverImageRef)}
                 className="ml-4 text-red-500 hover:text-red-700"
               >
                 Eliminar
@@ -340,10 +350,10 @@ const ProductForm = ({ initialData, onSubmit, isSubmitting }) => {
         <input
           ref={image1Ref}
           type="file"
-          onChange={(e) => handleImageChange(e, setImage1, 'image1')}
+          onChange={(e) => handleImageChange(e, setImage1File, 'image1')}
           className="w-full p-2 border rounded"
           accept="image/*"
-          required
+          required={!initialData}
         />
         {formData.image1 && (
           <div className="mt-2 flex items-center">
@@ -354,7 +364,7 @@ const ProductForm = ({ initialData, onSubmit, isSubmitting }) => {
             />
             <button
               type="button"
-              onClick={() => removeImage(setImage1, 'image1', image1Ref)}
+              onClick={() => removeImage(setImage1File, 'image1', image1Ref)}
               className="ml-4 text-red-500 hover:text-red-700"
             >
               Eliminar
@@ -370,7 +380,7 @@ const ProductForm = ({ initialData, onSubmit, isSubmitting }) => {
         <input
           ref={image2Ref}
           type="file"
-          onChange={(e) => handleImageChange(e, setImage2, 'image2')}
+          onChange={(e) => handleImageChange(e, setImage2File, 'image2')}
           className="w-full p-2 border rounded"
           accept="image/*"
         />
@@ -383,7 +393,7 @@ const ProductForm = ({ initialData, onSubmit, isSubmitting }) => {
             />
             <button
               type="button"
-              onClick={() => removeImage(setImage2, 'image2', image2Ref)}
+              onClick={() => removeImage(setImage2File, 'image2', image2Ref)}
               className="ml-4 text-red-500 hover:text-red-700"
             >
               Eliminar
@@ -399,7 +409,7 @@ const ProductForm = ({ initialData, onSubmit, isSubmitting }) => {
         <input
           ref={image3Ref}
           type="file"
-          onChange={(e) => handleImageChange(e, setImage3, 'image3')}
+          onChange={(e) => handleImageChange(e, setImage3File, 'image3')}
           className="w-full p-2 border rounded"
           accept="image/*"
         />
@@ -412,7 +422,7 @@ const ProductForm = ({ initialData, onSubmit, isSubmitting }) => {
             />
             <button
               type="button"
-              onClick={() => removeImage(setImage3, 'image3', image3Ref)}
+              onClick={() => removeImage(setImage3File, 'image3', image3Ref)}
               className="ml-4 text-red-500 hover:text-red-700"
             >
               Eliminar
@@ -428,7 +438,7 @@ const ProductForm = ({ initialData, onSubmit, isSubmitting }) => {
         <input
           ref={image4Ref}
           type="file"
-          onChange={(e) => handleImageChange(e, setImage4, 'image4')}
+          onChange={(e) => handleImageChange(e, setImage4File, 'image4')}
           className="w-full p-2 border rounded"
           accept="image/*"
         />
@@ -441,7 +451,7 @@ const ProductForm = ({ initialData, onSubmit, isSubmitting }) => {
             />
             <button
               type="button"
-              onClick={() => removeImage(setImage4, 'image4', image4Ref)}
+              onClick={() => removeImage(setImage4File, 'image4', image4Ref)}
               className="ml-4 text-red-500 hover:text-red-700"
             >
               Eliminar
