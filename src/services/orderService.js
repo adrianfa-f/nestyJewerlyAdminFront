@@ -4,7 +4,7 @@ const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3001/api";
 export const getOrders = async (page = 1, limit = 10, status = "") => {
   try {
     const response = await fetch(
-      `${API_URL}/orders?page=${page}&limit=${limit}&status=${status}`
+      `${API_URL}/api/orders?page=${page}&limit=${limit}&status=${status}`
     );
     return await response.json();
   } catch (error) {
@@ -15,7 +15,7 @@ export const getOrders = async (page = 1, limit = 10, status = "") => {
 
 export const getOrderStats = async () => {
   try {
-    const response = await fetch(`${API_URL}/orders/stats`);
+    const response = await fetch(`${API_URL}/api/orders/stats`);
     return await response.json();
   } catch (error) {
     console.error("Error fetching order stats:", error);
@@ -25,7 +25,7 @@ export const getOrderStats = async () => {
 
 export const updateOrderStatus = async (orderId, status) => {
   try {
-    const response = await fetch(`${API_URL}/orders/${orderId}`, {
+    const response = await fetch(`${API_URL}/api/orders/${orderId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
