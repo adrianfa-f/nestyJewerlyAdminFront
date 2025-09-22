@@ -14,10 +14,11 @@ const Orders = () => {
   const fetchOrders = useCallback(async () => {
     try {
       const data = await getOrders(currentPage, 10, statusFilter);
-      setOrders(data.orders);
-      setTotalPages(data.totalPages);
+      setOrders(data.orders || []);
+      setTotalPages(data.totalPages || 1);
     } catch (error) {
       console.error("Error fetching orders:", error);
+      setOrders([]);
     } finally {
       setLoading(false);
     }
@@ -25,7 +26,7 @@ const Orders = () => {
 
   useEffect(() => {
     fetchOrders();
-  }, [fetchOrders]); // Ahora fetchOrders es estable gracias a useCallback
+  }, [fetchOrders]);
 
   const handleStatusChange = async (orderId, newStatus) => {
     try {
@@ -41,6 +42,7 @@ const Orders = () => {
   };
 
   const formatDate = (dateString) => {
+    if (!dateString) return "Fecha no disponible";
     return new Date(dateString).toLocaleDateString("es-ES", {
       year: "numeric",
       month: "long",
@@ -131,66 +133,78 @@ const Orders = () => {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {orders.map((order) => (
-              <tr
-                key={order.id}
-                className={
-                  getStatusColor(order.status)
-                    .replace("text", "bg")
-                    .split(" ")[0]
-                }
-              >
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                  {order.orderNumber}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  <div>{order.customerName}</div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  <div>{order.customerEmail}</div>
-                  <div className="text-xs text-gray-400">
-                    {order.customerPhone}
-                  </div>
-                </td>
-                <td className="px-6 py-4 text-sm text-gray-500">
-                  <div>{order.customerAddress}</div>
-                  <div>
-                    {order.customerPostalCode} {order.customerCity}
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  €{order.total.toFixed(2)}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  <select
-                    value={order.status}
-                    onChange={(e) =>
-                      handleStatusChange(order.id, e.target.value)
-                    }
-                    className={`border rounded px-2 py-1 text-xs ${getStatusColor(
-                      order.status
-                    )}`}
-                  >
-                    <option value="pending">Pendiente</option>
-                    <option value="paid">Pagado</option>
-                    <option value="shipped">Enviado</option>
-                    <option value="completed">Completado</option>
-                    <option value="cancelled">Cancelado</option>
-                  </select>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {formatDate(order.createdAt)}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  <button
-                    onClick={() => setSelectedOrder(order)}
-                    className="text-blue-600 hover:text-blue-900 mr-3 text-xs"
-                  >
-                    Ver Detalles
-                  </button>
+            {orders && orders.length > 0 ? (
+              orders.map((order) => (
+                <tr
+                  key={order.id}
+                  className={
+                    getStatusColor(order.status)
+                      .replace("text", "bg")
+                      .split(" ")[0]
+                  }
+                >
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    {order.orderNumber || "N/A"}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <div>{order.customerName || "N/A"}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <div>{order.customerEmail || "N/A"}</div>
+                    <div className="text-xs text-gray-400">
+                      {order.customerPhone || "N/A"}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-500">
+                    <div>{order.customerAddress || "N/A"}</div>
+                    <div>
+                      {order.customerPostalCode || "N/A"}{" "}
+                      {order.customerCity || "N/A"}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    €{order.total ? order.total.toFixed(2) : "0.00"}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <select
+                      value={order.status || "pending"}
+                      onChange={(e) =>
+                        handleStatusChange(order.id, e.target.value)
+                      }
+                      className={`border rounded px-2 py-1 text-xs ${getStatusColor(
+                        order.status
+                      )}`}
+                    >
+                      <option value="pending">Pendiente</option>
+                      <option value="paid">Pagado</option>
+                      <option value="shipped">Enviado</option>
+                      <option value="completed">Completado</option>
+                      <option value="cancelled">Cancelado</option>
+                    </select>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {formatDate(order.createdAt)}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <button
+                      onClick={() => setSelectedOrder(order)}
+                      className="text-blue-600 hover:text-blue-900 mr-3 text-xs"
+                    >
+                      Ver Detalles
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td
+                  colSpan="8"
+                  className="px-6 py-4 text-center text-sm text-gray-500"
+                >
+                  No se encontraron órdenes
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>
@@ -200,29 +214,30 @@ const Orders = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-screen overflow-y-auto">
             <h2 className="text-xl font-bold mb-4">
-              Detalles de la Orden #{selectedOrder.orderNumber}
+              Detalles de la Orden #{selectedOrder.orderNumber || "N/A"}
             </h2>
 
             <div className="grid grid-cols-2 gap-4 mb-6">
               <div>
                 <h3 className="font-semibold mb-2">Información del Cliente</h3>
                 <p>
-                  <strong>Nombre:</strong> {selectedOrder.customerName}
+                  <strong>Nombre:</strong> {selectedOrder.customerName || "N/A"}
                 </p>
                 <p>
-                  <strong>Email:</strong> {selectedOrder.customerEmail}
+                  <strong>Email:</strong> {selectedOrder.customerEmail || "N/A"}
                 </p>
                 <p>
-                  <strong>Teléfono:</strong> {selectedOrder.customerPhone}
+                  <strong>Teléfono:</strong>{" "}
+                  {selectedOrder.customerPhone || "N/A"}
                 </p>
               </div>
 
               <div>
                 <h3 className="font-semibold mb-2">Dirección de Envío</h3>
-                <p>{selectedOrder.customerAddress}</p>
+                <p>{selectedOrder.customerAddress || "N/A"}</p>
                 <p>
-                  {selectedOrder.customerPostalCode}{" "}
-                  {selectedOrder.customerCity}
+                  {selectedOrder.customerPostalCode || "N/A"}{" "}
+                  {selectedOrder.customerCity || "N/A"}
                 </p>
               </div>
             </div>
@@ -230,35 +245,44 @@ const Orders = () => {
             <div className="mb-6">
               <h3 className="font-semibold mb-2">Productos</h3>
               <div className="border rounded divide-y">
-                {selectedOrder.items.map((item, index) => (
-                  <div
-                    key={index}
-                    className="p-3 flex justify-between items-center"
-                  >
-                    <div>
-                      <p className="font-medium">{item.name}</p>
-                      <p className="text-sm text-gray-600">
-                        Cantidad: {item.quantity}
+                {selectedOrder.items && Array.isArray(selectedOrder.items) ? (
+                  selectedOrder.items.map((item, index) => (
+                    <div
+                      key={index}
+                      className="p-3 flex justify-between items-center"
+                    >
+                      <div>
+                        <p className="font-medium">
+                          {item.name || "Producto sin nombre"}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          Cantidad: {item.quantity || 1}
+                        </p>
+                      </div>
+                      <p className="font-medium">
+                        €{((item.price || 0) * (item.quantity || 1)).toFixed(2)}
                       </p>
                     </div>
-                    <p className="font-medium">
-                      €{(item.price * item.quantity).toFixed(2)}
-                    </p>
+                  ))
+                ) : (
+                  <div className="p-3 text-center text-gray-500">
+                    No hay información de productos disponible
                   </div>
-                ))}
+                )}
               </div>
             </div>
 
             <div className="flex justify-between items-center mb-4">
               <p className="text-lg font-bold">
-                Total: €{selectedOrder.total.toFixed(2)}
+                Total: €
+                {selectedOrder.total ? selectedOrder.total.toFixed(2) : "0.00"}
               </p>
               <span
                 className={`px-3 py-1 rounded-full text-sm ${getStatusColor(
                   selectedOrder.status
                 )}`}
               >
-                {selectedOrder.status}
+                {selectedOrder.status || "pending"}
               </span>
             </div>
 
