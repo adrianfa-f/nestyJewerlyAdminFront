@@ -14,7 +14,9 @@ const Orders = () => {
   const fetchOrders = useCallback(async () => {
     try {
       const data = await getOrders(currentPage, 10, statusFilter);
+      console.log("GetOrder: ", data);
       setOrders(data.orders || []);
+      console.log("Orders: ", orders);
       setTotalPages(data.totalPages || 1);
     } catch (error) {
       console.error("Error fetching orders:", error);
@@ -22,7 +24,7 @@ const Orders = () => {
     } finally {
       setLoading(false);
     }
-  }, [currentPage, statusFilter]);
+  }, [currentPage, statusFilter, orders]);
 
   useEffect(() => {
     fetchOrders();
