@@ -14,7 +14,7 @@ const Orders = () => {
   const fetchOrders = useCallback(async () => {
     try {
       const data = await getOrders(currentPage, 10, statusFilter);
-      setOrders(data[0] || []);
+      setOrders(data[0]);
       setTotalPages(data.totalPages || 1);
     } catch (error) {
       console.error("Error fetching orders:", error);
