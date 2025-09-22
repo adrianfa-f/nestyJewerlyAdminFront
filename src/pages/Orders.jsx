@@ -13,9 +13,27 @@ const Orders = () => {
 
   const fetchOrders = useCallback(async () => {
     try {
+      console.log("Fetching orders...");
       const data = await getOrders(currentPage, 10, statusFilter);
-      setOrders(data[0]);
-      setTotalPages(data.totalPages || 1);
+      console.log("Raw data from service:", data);
+
+      // Si data es un array, úsalo directamente
+      if (Array.isArray(data)) {
+        setOrders(data);
+        setTotalPages(1); // O calcula las páginas si tienes esa información
+        console.log("Orders set to array:", data);
+      }
+      // Si data es un objeto con propiedad orders
+      else if (data && data.orders) {
+        setOrders(data.orders);
+        setTotalPages(data.totalPages || 1);
+        console.log("Orders set from data.orders:", data.orders);
+      }
+      // Si no hay datos válidos
+      else {
+        setOrders([]);
+        console.log("No valid data, setting orders to empty array");
+      }
     } catch (error) {
       console.error("Error fetching orders:", error);
       setOrders([]);
@@ -27,6 +45,11 @@ const Orders = () => {
   useEffect(() => {
     fetchOrders();
   }, [fetchOrders]);
+
+  // Agrega un efecto para debuguear cambios en orders
+  useEffect(() => {
+    console.log("Orders state updated:", orders);
+  }, [orders]);
 
   const handleStatusChange = async (orderId, newStatus) => {
     try {
@@ -306,27 +329,29 @@ const Orders = () => {
       )}
 
       {/* Paginación */}
-      <div className="mt-6 flex justify-between items-center">
-        <button
-          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-          disabled={currentPage === 1}
-          className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
-        >
-          Anterior
-        </button>
-        <span className="text-sm">
-          Página {currentPage} de {totalPages}
-        </span>
-        <button
-          onClick={() =>
-            setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-          }
-          disabled={currentPage === totalPages}
-          className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
-        >
-          Siguiente
-        </button>
-      </div>
+      {totalPages > 1 && (
+        <div className="mt-6 flex justify-between items-center">
+          <button
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+            className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+          >
+            Anterior
+          </button>
+          <span className="text-sm">
+            Página {currentPage} de {totalPages}
+          </span>
+          <button
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+            }
+            disabled={currentPage === totalPages}
+            className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+          >
+            Siguiente
+          </button>
+        </div>
+      )}
     </div>
   );
 };

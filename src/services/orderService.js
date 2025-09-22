@@ -4,9 +4,11 @@ const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3001/api";
 export const getOrders = async (page = 1, limit = 10, status = "") => {
   try {
     const response = await fetch(
-      `${API_URL}/api/orders?page=${page}&limit=${limit}&status=${status}`
+      `${API_URL}/orders?page=${page}&limit=${limit}&status=${status}`
     );
-    return await response.json();
+    const data = await response.json();
+    console.log("Service response:", data); // Agrega este log
+    return data;
   } catch (error) {
     console.error("Error fetching orders:", error);
     throw error;
