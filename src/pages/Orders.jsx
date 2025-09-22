@@ -68,7 +68,7 @@ const Orders = () => {
     if (!dateString) return "Fecha no disponible";
     return new Date(dateString).toLocaleDateString("es-ES", {
       year: "numeric",
-      month: "long",
+      month: "short",
       day: "numeric",
       hour: "2-digit",
       minute: "2-digit",
@@ -101,19 +101,22 @@ const Orders = () => {
   }
 
   return (
-    <div>
+    <div className="w-full">
       <h1 className="text-2xl font-bold mb-6">Gestión de Órdenes</h1>
 
-      <div className="mb-6 flex justify-between items-center">
+      <div className="mb-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div className="flex items-center space-x-4">
-          <label htmlFor="status-filter" className="text-sm font-medium">
+          <label
+            htmlFor="status-filter"
+            className="text-sm font-medium whitespace-nowrap"
+          >
             Filtrar por estado:
           </label>
           <select
             id="status-filter"
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="border rounded-md px-3 py-2"
+            className="border rounded-md px-3 py-2 text-sm"
           >
             <option value="">Todos</option>
             <option value="pending">Pendiente</option>
@@ -125,32 +128,32 @@ const Orders = () => {
         </div>
       </div>
 
-      <div className="bg-white rounded shadow overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
+      <div className="bg-white rounded shadow overflow-x-auto">
+        <table className="min-w-full divide-y divide-gray-200 text-sm">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Número de Orden
+              <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Orden
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Cliente
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Información de Contacto
+              <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Contacto
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Dirección de Envío
+              <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Dirección
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Total
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Estado
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Fecha
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Acciones
               </th>
             </tr>
@@ -166,35 +169,41 @@ const Orders = () => {
                       .split(" ")[0]
                   }
                 >
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  <td className="px-3 py-2 whitespace-nowrap font-medium text-gray-900">
                     {order.orderNumber || "N/A"}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <div>{order.customerName || "N/A"}</div>
+                  <td className="px-3 py-2 whitespace-nowrap text-gray-500">
+                    <div className="truncate max-w-[100px]">
+                      {order.customerName || "N/A"}
+                    </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <div>{order.customerEmail || "N/A"}</div>
-                    <div className="text-xs text-gray-400">
+                  <td className="px-3 py-2 whitespace-nowrap text-gray-500">
+                    <div className="truncate max-w-[120px]">
+                      {order.customerEmail || "N/A"}
+                    </div>
+                    <div className="text-xs text-gray-400 truncate max-w-[120px]">
                       {order.customerPhone || "N/A"}
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-500">
-                    <div>{order.customerAddress || "N/A"}</div>
-                    <div>
+                  <td className="px-3 py-2 text-gray-500">
+                    <div className="truncate max-w-[120px]">
+                      {order.customerAddress || "N/A"}
+                    </div>
+                    <div className="text-xs truncate max-w-[120px]">
                       {order.customerPostalCode || "N/A"}{" "}
                       {order.customerCity || "N/A"}
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-3 py-2 whitespace-nowrap text-gray-500">
                     €{order.total ? order.total.toFixed(2) : "0.00"}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-3 py-2 whitespace-nowrap text-gray-500">
                     <select
                       value={order.status || "pending"}
                       onChange={(e) =>
                         handleStatusChange(order.id, e.target.value)
                       }
-                      className={`border rounded px-2 py-1 text-xs ${getStatusColor(
+                      className={`border rounded px-1 py-1 text-xs w-full ${getStatusColor(
                         order.status
                       )}`}
                     >
@@ -205,13 +214,13 @@ const Orders = () => {
                       <option value="cancelled">Cancelado</option>
                     </select>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-3 py-2 whitespace-nowrap text-gray-500">
                     {formatDate(order.createdAt)}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-3 py-2 whitespace-nowrap text-gray-500">
                     <button
                       onClick={() => setSelectedOrder(order)}
-                      className="text-blue-600 hover:text-blue-900 mr-3 text-xs"
+                      className="text-blue-600 hover:text-blue-900 text-xs whitespace-nowrap"
                     >
                       Ver Detalles
                     </button>
@@ -220,10 +229,7 @@ const Orders = () => {
               ))
             ) : (
               <tr>
-                <td
-                  colSpan="8"
-                  className="px-6 py-4 text-center text-sm text-gray-500"
-                >
+                <td colSpan="8" className="px-3 py-4 text-center text-gray-500">
                   No se encontraron órdenes
                 </td>
               </tr>
@@ -234,22 +240,22 @@ const Orders = () => {
 
       {/* Modal de detalles de la orden */}
       {selectedOrder && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-screen overflow-y-auto">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-screen overflow-y-auto">
             <h2 className="text-xl font-bold mb-4">
               Detalles de la Orden #{selectedOrder.orderNumber || "N/A"}
             </h2>
 
-            <div className="grid grid-cols-2 gap-4 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
               <div>
                 <h3 className="font-semibold mb-2">Información del Cliente</h3>
-                <p>
+                <p className="text-sm">
                   <strong>Nombre:</strong> {selectedOrder.customerName || "N/A"}
                 </p>
-                <p>
+                <p className="text-sm">
                   <strong>Email:</strong> {selectedOrder.customerEmail || "N/A"}
                 </p>
-                <p>
+                <p className="text-sm">
                   <strong>Teléfono:</strong>{" "}
                   {selectedOrder.customerPhone || "N/A"}
                 </p>
@@ -257,8 +263,10 @@ const Orders = () => {
 
               <div>
                 <h3 className="font-semibold mb-2">Dirección de Envío</h3>
-                <p>{selectedOrder.customerAddress || "N/A"}</p>
-                <p>
+                <p className="text-sm">
+                  {selectedOrder.customerAddress || "N/A"}
+                </p>
+                <p className="text-sm">
                   {selectedOrder.customerPostalCode || "N/A"}{" "}
                   {selectedOrder.customerCity || "N/A"}
                 </p>
@@ -272,13 +280,13 @@ const Orders = () => {
                   selectedOrder.items.map((item, index) => (
                     <div
                       key={index}
-                      className="p-3 flex justify-between items-center"
+                      className="p-3 flex justify-between items-center text-sm"
                     >
                       <div>
                         <p className="font-medium">
                           {item.name || "Producto sin nombre"}
                         </p>
-                        <p className="text-sm text-gray-600">
+                        <p className="text-gray-600">
                           Cantidad: {item.quantity || 1}
                         </p>
                       </div>
@@ -288,7 +296,7 @@ const Orders = () => {
                     </div>
                   ))
                 ) : (
-                  <div className="p-3 text-center text-gray-500">
+                  <div className="p-3 text-center text-gray-500 text-sm">
                     No hay información de productos disponible
                   </div>
                 )}
@@ -312,14 +320,16 @@ const Orders = () => {
             {selectedOrder.notes && (
               <div className="mb-4">
                 <h3 className="font-semibold mb-2">Notas del Pedido</h3>
-                <p className="bg-gray-50 p-3 rounded">{selectedOrder.notes}</p>
+                <p className="bg-gray-50 p-3 rounded text-sm">
+                  {selectedOrder.notes}
+                </p>
               </div>
             )}
 
             <div className="flex justify-end">
               <button
                 onClick={() => setSelectedOrder(null)}
-                className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
+                className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400 text-sm"
               >
                 Cerrar
               </button>
@@ -334,7 +344,7 @@ const Orders = () => {
           <button
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
             disabled={currentPage === 1}
-            className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+            className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50 text-sm"
           >
             Anterior
           </button>
@@ -346,7 +356,7 @@ const Orders = () => {
               setCurrentPage((prev) => Math.min(prev + 1, totalPages))
             }
             disabled={currentPage === totalPages}
-            className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+            className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50 text-sm"
           >
             Siguiente
           </button>
