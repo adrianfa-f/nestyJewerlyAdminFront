@@ -15,7 +15,7 @@ const Orders = () => {
     try {
       const data = await getOrders(currentPage, 10, statusFilter);
       console.log("GetOrder: ", data);
-      setOrders(data.orders || []);
+      setOrders(data || []);
       console.log("Orders: ", orders);
       setTotalPages(data.totalPages || 1);
     } catch (error) {
